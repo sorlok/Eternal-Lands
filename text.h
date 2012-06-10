@@ -220,6 +220,14 @@ void init_text_buffers ();
 void timestamp_chat_log();
 
 /*!
+ * \brief Closes all log files.
+ * 
+ *     Closes the chat and server log files.
+ *     Does nothing to a log file if already closed.
+ */
+void close_text_log_files();
+
+/*!
  * \ingroup text_font
  * \brief   Writes the given data up to a length of \a len to a logfile.
  *

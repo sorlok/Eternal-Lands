@@ -168,6 +168,22 @@ void open_chat_log(){
 	fwrite (starttime, strlen(starttime), 1, chat_log);
 }
 
+void close_text_log_files() {
+	//Close the chat log
+	if (chat_log != NULL)
+	{
+		fclose(chat_log);
+		chat_log = NULL;
+	}
+
+	//Close the server log
+	if (srv_log != NULL)
+	{
+		fclose(srv_log);
+		srv_log = NULL;
+	}
+}
+
 
 void timestamp_chat_log(){
 	char starttime[200], sttime[200];

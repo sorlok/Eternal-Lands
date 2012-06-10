@@ -68,3 +68,24 @@ void log_conn(const Uint8 *in_data, Uint16 data_length)
   	fflush (conn_file);
 }
 
+
+
+void close_err_log_files() {
+	//Close the connection file
+	if (conn_file != NULL)
+	{
+		fclose(conn_file);
+		conn_file = NULL;
+	}
+
+#ifdef EXTRA_DEBUG
+	//Close the func file
+	if (func_file != NULL)
+	{
+		fclose(func_file);
+		func_file = NULL;
+	}
+#endif
+}
+
+

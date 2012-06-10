@@ -54,6 +54,14 @@ void log_conn(const Uint8 *in_data, Uint16 data_length);
 void log_func_err(const char * file, const char * func, unsigned line);
 #endif
 
+/*!
+ * \brief Closes all log files.
+ * 
+ *     Closes the connection and (optionally) func log files.
+ *     Does nothing to a log file if already closed.
+ */
+void close_err_log_files();
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

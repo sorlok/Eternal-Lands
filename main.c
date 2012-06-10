@@ -453,6 +453,11 @@ int main(int argc, char **argv)
 	olc_shutdown();
 #endif	//OLC
 
+	//Clean up open filehandles/sockets
+	release_sdlsocket_items();
+	close_text_log_files();
+	close_err_log_files();
+
 #ifndef WINDOWS
 	// attempt to restart if requested
 	if(restart_required > 0){

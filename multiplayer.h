@@ -110,6 +110,13 @@ int my_tcp_flush (TCPsocket my_socket);
 void connect_to_server();
 
 /*!
+ * \brief   Releases allocated socket-related items.
+ *
+ *      Releases the socket and socketset. Nothing is done to already-released items.
+ */
+void release_sdlsocket_items();
+
+/*!
  * \ingroup network_actors
  * \brief   Sends the login information from the username and password input fields to the server.
  *

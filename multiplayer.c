@@ -449,6 +449,10 @@ void connect_to_server()
 	if(this_version_is_invalid) return;
 	if(set)
 		{
+			if (my_socket) 
+			{
+				SDLNet_TCP_DelSocket(set,my_socket);
+			}
 			SDLNet_FreeSocketSet(set);
 			set= 0;
 		}
@@ -528,6 +532,23 @@ void connect_to_server()
 
 	my_tcp_flush(my_socket);    // make sure tcp output buffer is empty
 }
+
+
+void release_sdlsocket_items() 
+{
+	if(set) {
+		if (my_socket) {
+			SDLNet_TCP_DelSocket(set,my_socket);
+		}
+		SDLNet_FreeSocketSet(set);
+		set = NULL;
+	}
+	if(my_socket) {
+		SDLNet_TCP_Close(my_socket);
+		my_socket = NULL;
+	}
+}
+
 
 void send_login_info()
 {
