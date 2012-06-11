@@ -12,6 +12,8 @@
 #include "../hash.h"
 #include "../xz/7zCrc.h"
 
+#include "gzip_wrapper.hpp"
+
 #ifdef FASTER_MAP_LOAD
 typedef enum
 {
@@ -604,7 +606,7 @@ static el_file_ptr gz_file_open(const char* file_name)
 {
 	gzFile file;
 	el_file_ptr result;
-	Sint64 read, size;
+	Sint64 size;
 
 	file = gzopen(file_name, "rb");
 	if (!file)
@@ -616,12 +618,12 @@ static el_file_ptr gz_file_open(const char* file_name)
 	result = calloc(1, sizeof(el_file_t));
 	result->file_name = strdup(file_name);
 
-	size = 0;
+	//size = 0;
 #if	(ZLIB_VERNUM >= 0x1235)
 	gzbuffer(file, 0x40000); // 256k
 #endif
 
-	do
+/*	do
 	{
 		result->buffer = realloc(result->buffer, size + 0x40000);
 		read = gzread(file, result->buffer + size, 0x40000);
@@ -629,7 +631,13 @@ static el_file_ptr gz_file_open(const char* file_name)
 	}
 	while (gzeof(file) == 0);
 
-	result->buffer = realloc(result->buffer, size);
+	result->buffer = realloc(result->buffer, size);*/
+
+	//Try out different buffering strategies here:
+	//result->buffer = read_gzip_stream_orig(file, &size);
+	//result->buffer = read_gzip_stream_buff(file, &size);
+	result->buffer = read_gzip_stream_buff_g(file, &size);
+
 #ifdef FASTER_STARTUP
 	result->current = result->buffer;
 	result->end = result->buffer + size;
