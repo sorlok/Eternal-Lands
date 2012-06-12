@@ -4334,7 +4334,9 @@ int parse_actor_nodes(actor_types *act, const xmlNode *cfg, const xmlNode *defau
 			} else if (!strcmp(name, "skeleton")) {
 				char skeleton_name[MAX_FILE_PATH];
 				get_string_value(skeleton_name, sizeof(skeleton_name), item);
-				act->coremodel= CalCoreModel_New("Model");
+				act->coremodel = CalCoreModel_New("Model");
+				begin_managing_cal_core_model(act->coremodel);
+
 				if(!CalCoreModel_ELLoadCoreSkeleton(act->coremodel, skeleton_name)) {
 					LOG_ERROR("Cal3d error: %s: %s\n", skeleton_name, CalError_GetLastErrorDescription());
 					act->skeleton_type = -1;
