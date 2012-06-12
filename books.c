@@ -71,6 +71,7 @@ page * add_page(book * b)
 	p=(page*)calloc(1,sizeof(page));
 	p->lines=(char**)calloc(b->max_lines+1,sizeof(char *));
 	p->page_no=b->no_pages+1;
+	p->image = NULL;
 	
 	b->pages=(page**)realloc(b->pages,(b->no_pages+2)*sizeof(page*));
 	b->pages[b->no_pages++]=p;

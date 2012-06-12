@@ -64,10 +64,11 @@ void delete_books(BookShelfItem* curr) {
 		page** pgs = b->pages;
 		for(int i=0; i<b->no_pages; i++,pgs++) {
 			page* p = *pgs;
-			char **l=p->lines;
 			if(p->image) { free(p->image); }
-			for(;*l;l++) { free(*l); }
+			char **lines = p->lines;
+			for(;*lines;lines++) { free(*lines); }
 			free(p->lines);
+			free(p);
 		}
 
 		//Now free all pages and the book itself.
