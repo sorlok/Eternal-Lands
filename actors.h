@@ -203,8 +203,8 @@ typedef struct
 /*! Defines the main models looks*/
 typedef struct
 {
-	char model_name[MAX_FILE_PATH];
-	char arms_name[MAX_FILE_PATH];
+	char* model_name;
+	char* arms_name;
 	char torso_name[MAX_FILE_PATH];
 	char arms_mask[MAX_FILE_PATH];
 	char torso_mask[MAX_FILE_PATH];

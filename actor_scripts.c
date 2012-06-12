@@ -34,6 +34,7 @@
 #include "minimap.h"
 #include "io/elfilewrapper.h"
 #include "io/cal3d_io_wrapper.h"
+#include "io/xml_wrapper.hpp"
 #include "actor_init.h"
 #ifdef	NEW_TEXTURES
 #include "textures.h"
@@ -98,6 +99,13 @@ int parse_actor_frames(actor_types *act, const xmlNode *cfg, const xmlNode *defa
 #ifdef MORE_ATTACHED_ACTORS_DEBUG
 static int thecount=0;
 #endif
+
+
+//Helper: check NULL too; return 0 for false; 1 for true
+//If both are null, returns false (might consider changing this).
+int safe_strings_equal(const char* const str1, const char* const str2) {
+	return str1 && str2 && strcmp(str1, str2) == 0;
+}
 
 
 void unfreeze_horse(int i){
@@ -2879,9 +2887,9 @@ int parse_actor_shirt(actor_types *act, const xmlNode *cfg, const xmlNode *defau
 	for(item=cfg->children; item; item=item->next) {
 		if(item->type == XML_ELEMENT_NODE) {
 			if(xmlStrcasecmp (item->name, (xmlChar*)"arms") == 0) {
-				get_string_value(shirt->arms_name, sizeof(shirt->arms_name), item);
+				shirt->arms_name = get_string_value_buff(shirt->arms_name, MAX_FILE_PATH, item);
 			} else if(xmlStrcasecmp(item->name, (xmlChar*)"mesh") == 0) {
-				get_string_value(shirt->model_name, sizeof(shirt->model_name), item);
+				shirt->model_name = get_string_value_buff(shirt->model_name, MAX_FILE_PATH, item);
 				shirt->mesh_index= cal_load_mesh(act, shirt->model_name, "shirt");
 			} else if(xmlStrcasecmp(item->name, (xmlChar*)"torso") == 0) {
 				get_string_value(shirt->torso_name, sizeof(shirt->torso_name), item);
@@ -2902,9 +2910,9 @@ int parse_actor_shirt(actor_types *act, const xmlNode *cfg, const xmlNode *defau
 
 		if(default_node){
 			if(shirt->arms_name==NULL || *shirt->arms_name=='\0')
-				get_item_string_value(shirt->arms_name, sizeof(shirt->arms_name), default_node, (xmlChar*)"arms");
+				shirt->arms_name = get_item_string_value_buff(shirt->arms_name, MAX_FILE_PATH, default_node, (xmlChar*)"arms");
 			if(shirt->model_name==NULL || *shirt->model_name=='\0'){
-				get_item_string_value(shirt->model_name, sizeof(shirt->model_name), default_node, (xmlChar*)"mesh");
+				shirt->model_name = get_item_string_value_buff(shirt->model_name, MAX_FILE_PATH, default_node, (xmlChar*)"mesh");
 				shirt->mesh_index= cal_load_mesh(act, shirt->model_name, "shirt");
 			}
 			if(shirt->torso_name==NULL || *shirt->torso_name=='\0')
@@ -4172,7 +4180,7 @@ int cal_search_mesh (actor_types *act, const char *fn, const char *kind)
 	{
 		for (i = 0; i < actor_part_sizes[ACTOR_SHIRT_SIZE]; i++)
 		{
-			if (strcmp (fn, act->shirt[i].model_name) == 0 && act->shirt[i].mesh_index != -1)
+			if (safe_strings_equal(fn, act->shirt[i].model_name) && act->shirt[i].mesh_index != -1)
 				return act->shirt[i].mesh_index;
 		}
 	}
