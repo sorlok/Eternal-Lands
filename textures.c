@@ -2281,7 +2281,7 @@ void free_texture_cache()
 	}
 
 	free(texture_handles);
-
+//printf("Deleting texture cache\n");
 	cache_delete(texture_cache);
 }
 

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "queue.h"
+#include "queue_manager.hpp"
 #include "elmemory.h"
 #include "threads.h"
 #include "errors.h"
@@ -18,10 +19,17 @@ int queue_initialise (queue_t **queue)
 	/* Create a dummy node that's always at the front of our queue */
 	if (((*queue)->front = malloc(sizeof(node_t))) == 0)
 	{
+		//Note: We leak the original queue structure if we return here, but
+		//      if we're out of memory there are bigger problems to deal with.
 		LOG_ERROR("Failed to allocate memory for queue node");
 
 		return 0;
 	}
+
+	//Send this to our queue manager.
+	begin_managing_queue(*queue);
+
+	//Initialize it.
 	(*queue)->front->data = 0;
 	(*queue)->rear = (*queue)->front;
 	(*queue)->front->next = 0;
@@ -161,6 +169,9 @@ void *queue_peek(const queue_t *queue)
 void queue_destroy (queue_t *queue)
 {
 	void *tmp;
+
+	//Tell our queue manager that we're done.
+	stop_managing_queue(queue);
 
 	if(queue != NULL) {
 		CHECK_AND_LOCK_MUTEX(queue->mutex);
