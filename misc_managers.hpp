@@ -28,6 +28,9 @@ void begin_managing_weapon_part(weapon_part* wp);
 void begin_managing_tile_map(PF_TILE * tm);
 void stop_managing_tile_map(PF_TILE * tm);
 
+void begin_managing_voidp(void* vp);
+void stop_managing_voidp(void* vp);
+
 #ifdef __cplusplus
 }
 #endif

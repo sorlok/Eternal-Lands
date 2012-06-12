@@ -15,7 +15,8 @@ public:
 	//Sets for each manageable item. We never remove items, so a set is sufficient.
 	std::set<shirt_part*> all_shirt_parts;
 	std::set<weapon_part*> all_weapon_parts;
-	std::set<PF_TILE *> all_tile_maps;
+	std::set<PF_TILE*> all_tile_maps;
+	std::set<void*> all_voidps;
 
 	~MiscManager();
 }; 
@@ -85,6 +86,15 @@ extern "C" void stop_managing_tile_map(PF_TILE* tm)
 	stop_managing(manager.all_tile_maps, tm, "Tile map");
 }
 
+extern "C" void begin_managing_voidp(void* vp)
+{
+	begin_managing(manager.all_voidps, vp, "void*");
+}
+
+extern "C" void stop_managing_voidp(void* vp)
+{
+	stop_managing(manager.all_voidps, vp, "void*");
+}
 
 
 namespace {
@@ -97,6 +107,7 @@ MiscManager::~MiscManager() {
 	free_all_elements(all_shirt_parts);
 	free_all_elements(all_weapon_parts);
 	free_all_elements(all_tile_maps);
+	free_all_elements(all_voidps);
 }
 
 

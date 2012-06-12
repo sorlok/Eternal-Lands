@@ -240,7 +240,6 @@ void *queue_pop_blocking(queue_t *queue)
 	{
 		return 0;
 	}
-
 	CHECK_AND_LOCK_MUTEX(queue->mutex);
 
 	while (queue->front == queue->rear)

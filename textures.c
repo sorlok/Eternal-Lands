@@ -12,6 +12,7 @@
 #include "init.h"
 #include "load_gl_extensions.h"
 #include "map.h"
+#include "misc_managers.hpp"
 #ifdef	NEW_TEXTURES
 #include "image.h"
 #include "image_loading.h"
@@ -2126,7 +2127,12 @@ int load_enhanced_actor_thread(void* done)
 
 	init_thread_log("load_actors");
 
+	//Note: This thread can wait forever, causing the buffer to remain allocated.
+	//So we manage it in case the thread dies or the program exits.
+	//Note: Instead of using the memory manager, it might be worthwhile to 
+	//      malloc() and free() this memory directly before/after it's used
 	buffer = malloc_aligned(TEXTURE_SIZE_X * TEXTURE_SIZE_Y * 4, 16);
+	begin_managing_voidp(buffer);
 
 	while (*((Uint32*)done) == 0)
 	{
@@ -2136,9 +2142,7 @@ int load_enhanced_actor_thread(void* done)
 		{
 			continue;
 		}
-
 		CHECK_AND_LOCK_MUTEX(actor->mutex);
-
 		while (actor->state == tst_unloaded)
 		{
 			memcpy(&files, &actor->files, sizeof(files));
@@ -2174,10 +2178,11 @@ int load_enhanced_actor_thread(void* done)
 				free_image(&image);
 			}
 		}
-
 		CHECK_AND_UNLOCK_MUTEX(actor->mutex);
 	}
 
+	//Stop managing and free this pointer.
+	stop_managing_voidp(buffer);
 	free_aligned(buffer);
 
 	return 1;
