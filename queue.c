@@ -8,7 +8,7 @@
 
 int queue_initialise (queue_t **queue)
 {
-	(*queue) = malloc(sizeof(queue_t));
+	//(*queue) = malloc(sizeof(queue_t));
 	if (((*queue) = malloc(sizeof(queue_t))) == 0)
 	{
 		LOG_ERROR("Failed to allocate memory for queue");
