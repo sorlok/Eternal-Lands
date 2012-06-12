@@ -36,6 +36,7 @@
 #include "eye_candy_wrapper.h"
 #include "minimap.h"
 #include "io/elpathwrapper.h"
+#include "misc_managers.hpp"
 #ifdef PAWN
 #include "pawn/elpawn.h"
 #endif
@@ -78,6 +79,7 @@ void destroy_map()
 	///kill the pathfinding tile map
 	if(pf_tile_map)
 	{
+		stop_managing_tile_map(pf_tile_map);
 		free(pf_tile_map);
 		pf_tile_map = NULL;
 
@@ -154,6 +156,7 @@ static __inline__ void build_path_map()
 
 	//create the tile map that will be used for pathfinding
 	pf_tile_map = (PF_TILE *)calloc(tile_map_size_x*tile_map_size_y*6*6, sizeof(PF_TILE));
+	begin_managing_tile_map(pf_tile_map);
 
 	i = 0;
 	for (y = 0; y < tile_map_size_y*6; y++)

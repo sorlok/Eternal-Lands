@@ -62,7 +62,7 @@ COBJS=2d_objects.o 3d_objects.o \
 	$(foreach FEATURE, $(FEATURES), $($(FEATURE)_COBJ))
 	
 CXXOBJS=actor_init.o cal3d_wrapper.o context_menu.o optimizer.o sendvideoinfo.o	\
-	bookshelf.o queue_manager.o \
+	bookshelf.o queue_manager.o misc_managers.o \
 	exceptions/extendedexception.o xml/xmlhelper.o quest_log.o	\
 	engine/logging.o elloggingwrapper.o	\
 	io/cal3d_io_wrapper.o item_lists.o \

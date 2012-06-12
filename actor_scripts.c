@@ -34,6 +34,7 @@
 #include "minimap.h"
 #include "io/elfilewrapper.h"
 #include "io/cal3d_io_wrapper.h"
+#include "misc_managers.hpp"
 #include "actor_init.h"
 #ifdef	NEW_TEXTURES
 #include "textures.h"
@@ -3305,6 +3306,8 @@ int parse_actor_weapon(actor_types *act, const xmlNode *cfg, const xmlNode *defa
 	if (act->weapon == NULL) {
 		int i, j;
 		act->weapon = (weapon_part*)calloc(actor_part_sizes[ACTOR_WEAPON_SIZE], sizeof(weapon_part));
+		begin_managing_weapon_part(act->weapon);
+
 		for (i = actor_part_sizes[ACTOR_WEAPON_SIZE]; i--;) {
 			act->weapon[i].mesh_index = -1;
 			for (j = 0; j < NUM_WEAPON_FRAMES; j++) {
@@ -4488,6 +4491,9 @@ int parse_actor_script(const xmlNode *cfg)
 		{
 			act->shirt = (shirt_part*)calloc(actor_part_sizes[ACTOR_SHIRT_SIZE], sizeof(shirt_part));
 			act->shirt[0].mesh_index= cal_load_mesh(act, act->file_name, NULL); //save the single meshindex as torso
+
+			//Manage this shirt.
+			begin_managing_shirt_part(act->shirt);
 		}
 		if (use_animation_program)
 		{
