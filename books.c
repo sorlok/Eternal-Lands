@@ -3,6 +3,7 @@
 #include <libxml/tree.h>
 #include <string.h>
 #include "books.h"
+#include "bookshelf.hpp"
 #include "asc.h"
 #include "draw_scene.h"
 #include "errors.h"
@@ -54,50 +55,9 @@ int book_opened=-1;//The ID of the book opened
 static int paper1_text = -1; // Index in the texture cache of the paper texture
 static int book1_text = -1;  // Index in the texture cache of the book texture
 
-typedef struct {
-	char file[200];
-	
-	int x;
-	int y;
+//book * books=NULL;
 
-	int w;
-	int h;
-	
-	int texture;
-
-	int u[2];
-	int v[2];
-} _image;
-
-typedef struct {
-	char ** lines;
-	_image * image;
-	int page_no;
-} page;
-
-typedef struct _book {
-	char title[35];
-	int id;
-	
-	int type;
-	
-	int no_pages;
-	page ** pages;
-	int max_width;
-	int max_lines;
-	
-	int server_pages;
-	int have_server_pages;
-	int pages_to_scroll;
-
-	int active_page;
-
-	struct _book * next;
-} book;
-
-book * books=NULL;
-
-void add_book(book *bs);
+//void add_book(book *bs);
 void display_book_window(book *b);
 
 /*Memory handling etc.*/
@@ -171,7 +131,7 @@ _image *create_image (const char* file, int x, int y, int w, int h, float u_star
 	return img;
 }
 
-void free_page(page * p)
+/*void free_page(page * p)
 {
 	char **l=p->lines;
 	
@@ -189,11 +149,11 @@ void free_book(book * b)
 	for(i=0;i<b->no_pages;i++,p++) free_page(*p);
 	free(b->pages);
 	free(b);
-}
+}*/
 
 /*Multiple book handling*/
 
-book * get_book(int id)
+/*book * get_book(int id)
 {
 	book *b;
 	
@@ -213,7 +173,7 @@ void add_book(book *bs)
 	} else {
 		books=bs;
 	}
-}
+}*/
 
 /*Book parser*/
 
@@ -562,9 +522,9 @@ void init_books()
 #endif	/* NEW_TEXTURES */
 
 	read_book("books/races/human.xml", 2, book_human);
+	read_book("books/races/gnome.xml", 2, book_gnome); //Adding books out of order helps slightly for our tree.
 	read_book("books/races/dwarf.xml", 2, book_dwarf);
 	read_book("books/races/elf.xml", 2, book_elf);
-	read_book("books/races/gnome.xml", 2, book_gnome);
 	read_book("books/races/orchan.xml", 2, book_orchan);
 	read_book("books/races/draegoni.xml", 2, book_draegoni);
 

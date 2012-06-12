@@ -75,6 +75,54 @@ void open_book(int id);
  */
 void close_book(int book_id);
 
+
+///Definition of an image (required by page)
+typedef struct {
+	char file[200];
+	
+	int x;
+	int y;
+
+	int w;
+	int h;
+	
+	int texture;
+
+	int u[2];
+	int v[2];
+} _image;
+
+
+///Definition of a page (required by book)
+typedef struct {
+	char ** lines;
+	_image * image;
+	int page_no;
+} page;
+
+
+///Definition of a book (required by the bookshelf)
+typedef struct {
+	char title[35];
+	int id;
+	
+	int type;
+	
+	int no_pages;
+	page ** pages;
+	int max_width;
+	int max_lines;
+	
+	int server_pages;
+	int have_server_pages;
+	int pages_to_scroll;
+
+	int active_page;
+
+	//struct _book * next;
+} book;
+
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
