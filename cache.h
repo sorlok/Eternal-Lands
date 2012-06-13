@@ -95,6 +95,10 @@ void cache_system_init(Uint32 max_items);
  */
 void cache_system_maint(void);
 
+
+//This works now.
+void cache_system_shutdown();
+
 #ifdef	ELC
 /*!
  * \ingroup cache
