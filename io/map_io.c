@@ -17,6 +17,7 @@
 #ifdef CLUSTER_INSIDES
 #include "../cluster.h"
 #endif
+#include "../misc_managers.hpp"
 
 #ifndef SHOW_FLICKERING
 const float offset_2d_increment = (1.0f / 32768.0f);	// (1.0f / 8388608.0f) is the minimum for 32-bit floating point.
@@ -156,10 +157,12 @@ static int do_load_map(const char *file_name, update_func *update_function)
 	// allocate the tile map (it was destroyed), and fill it
 	tile_map = calloc (tile_map_size_x*tile_map_size_y, 1);
 	memcpy(tile_map, file_mem + cur_map_header.tile_map_offset, tile_map_size_x*tile_map_size_y);
+	begin_managing_memchunk(tile_map);
 
 	// allocate the height map, and fill it
 	height_map = calloc (tile_map_size_x*tile_map_size_y*6*6, 1);
 	memcpy(height_map, file_mem + cur_map_header.height_map_offset, tile_map_size_x*tile_map_size_y*6*6);
+	begin_managing_memchunk(height_map);
 
 #ifdef CLUSTER_INSIDES
 	// check if we need to compute the clusters, or if they're stored

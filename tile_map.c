@@ -17,6 +17,7 @@
 #ifdef FSAA
 #include "fsaa/fsaa.h"
 #endif /* FSAA */
+#include "misc_managers.hpp"
 
 #ifdef MAP_EDITOR2
 img_struct map_tiles[256];
@@ -38,7 +39,10 @@ int terrain_buffer_usage = 0;
 
 void init_terrain_buffers(int terrain_buffer_size)
 {
+	//Realloc can re-assign memory, so we have to do this shuffle (unfortunately)
+	if (terrain_tile_buffer) { stop_managing_memchunk(terrain_tile_buffer); }
 	terrain_tile_buffer = realloc(terrain_tile_buffer, terrain_buffer_size * 4 * 2 * sizeof(GLfloat));
+	begin_managing_memchunk(terrain_tile_buffer);
 
 	if (have_extension(arb_vertex_buffer_object))
 	{

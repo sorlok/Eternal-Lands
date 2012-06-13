@@ -2,6 +2,7 @@
 
 #include "cluster.h"
 #include "actors.h"
+#include "misc_managers.hpp"
 
 static short* clusters = NULL;
 
@@ -15,6 +16,8 @@ void set_clusters (const char* data)
 	int idx;
 
 	clusters = calloc (nx * ny, sizeof (short));
+	begin_managing_memchunk(clusters);
+
 	for (idx = 0; idx < nx*ny; idx++)
 		clusters[idx] = SDL_SwapLE16 (cdata[idx]);	
 }
@@ -139,8 +142,10 @@ short get_cluster (int x, int y)
 
 void destroy_clusters_array ()
 {
-	if (clusters)
+	if (clusters) {
+		stop_managing_memchunk(clusters);
 		free (clusters);
+	}
 	clusters = NULL;
 }
 

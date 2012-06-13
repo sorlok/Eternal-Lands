@@ -63,6 +63,7 @@ void destroy_map()
 	//kill the tile and height map
 	if(tile_map)
 	{
+		stop_managing_memchunk(tile_map);
 		free (tile_map);
 		tile_map = NULL;
 	}
@@ -71,6 +72,7 @@ void destroy_map()
 
 	if(height_map)
 	{
+		stop_managing_memchunk(height_map);
 		free (height_map);
 		height_map = NULL;
 	}

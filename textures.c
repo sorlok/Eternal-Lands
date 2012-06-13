@@ -1543,6 +1543,7 @@ static void load_enhanced_actor_threaded(const enhanced_actor_images_t* files,
 	image->format = format;
 	image->image = malloc_aligned(size, 16);
 	memset(image->image, 0xFF, size);
+	begin_managing_memchunk(image->image);
 
 	alpha = 0;
 

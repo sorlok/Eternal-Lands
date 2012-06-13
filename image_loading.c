@@ -14,6 +14,7 @@
 #include <SDL_image.h>
 #include "ddsimage.h"
 #include "memory.h"
+#include "misc_managers.hpp"
 
 #define IMAGE_EXTENSIONS_MAX 5
 static const char* image_extensions[IMAGE_EXTENSIONS_MAX] =
@@ -591,6 +592,7 @@ void free_image(image_t* image)
 		return;
 	}
 
+	stop_managing_memchunk(image->image);
 	free_aligned(image->image);
 
 	image->image = 0;
