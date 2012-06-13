@@ -2223,7 +2223,7 @@ void init_texture_cache()
 #endif	/* ELC */
 
 	texture_cache = cache_init("texture cache", TEXTURE_CACHE_MAX, 0);
-	begin_managing_cache(texture_cache);
+	//begin_managing_cache(texture_cache);
 
 	cache_set_compact(texture_cache, compact_texture);
 	cache_set_time_limit(texture_cache, 5 * 60 * 1000);
