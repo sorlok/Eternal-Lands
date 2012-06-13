@@ -20,19 +20,19 @@ extern "C"
 {
 #endif
 
-#include "actors.h"
-#include "pathfinder.h"
+#include "cache.h"
 
 //The easy way
 struct CalCoreModel;
 
-void begin_managing_shirt_part(shirt_part* sp);
-void begin_managing_weapon_part(weapon_part* wp);
-void begin_managing_tile_map(PF_TILE * tm);
-void stop_managing_tile_map(PF_TILE * tm);
-void begin_managing_voidp(void* vp);
-void stop_managing_voidp(void* vp);
+void begin_managing_memchunk(void* vp);
+void stop_managing_memchunk(void* vp);
+
 void begin_managing_cal_core_model(struct CalCoreModel* cm);
+void stop_managing_cal_core_model(struct CalCoreModel* cm);
+
+void begin_managing_cache(cache_struct* cm);
+void stop_managing_cache(cache_struct* cm);
 
 #ifdef __cplusplus
 }

@@ -2132,7 +2132,7 @@ int load_enhanced_actor_thread(void* done)
 	//Note: Instead of using the memory manager, it might be worthwhile to 
 	//      malloc() and free() this memory directly before/after it's used
 	buffer = malloc_aligned(TEXTURE_SIZE_X * TEXTURE_SIZE_Y * 4, 16);
-	begin_managing_voidp(buffer);
+	begin_managing_memchunk(buffer);
 
 	while (*((Uint32*)done) == 0)
 	{
@@ -2182,7 +2182,7 @@ int load_enhanced_actor_thread(void* done)
 	}
 
 	//Stop managing and free this pointer.
-	stop_managing_voidp(buffer);
+	stop_managing_memchunk(buffer);
 	free_aligned(buffer);
 
 	return 1;
@@ -2223,12 +2223,17 @@ void init_texture_cache()
 #endif	/* ELC */
 
 	texture_cache = cache_init("texture cache", TEXTURE_CACHE_MAX, 0);
+	begin_managing_cache(texture_cache);
+
 	cache_set_compact(texture_cache, compact_texture);
 	cache_set_time_limit(texture_cache, 5 * 60 * 1000);
 
 	texture_handles = calloc(TEXTURE_CACHE_MAX, sizeof(texture_cache_t));
+	begin_managing_memchunk(texture_handles);
+
 #ifdef	ELC
 	actor_texture_handles = calloc(ACTOR_TEXTURE_CACHE_MAX, sizeof(actor_texture_cache_t));
+	begin_managing_memchunk(actor_texture_handles);
 
 	queue_initialise(&actor_texture_queue);
 
@@ -2274,6 +2279,7 @@ void free_texture_cache()
 		}
 	}
 
+	stop_managing_memchunk(actor_texture_handles);
 	free(actor_texture_handles);
 #endif	/* ELC */
 
@@ -2285,8 +2291,11 @@ void free_texture_cache()
 		}
 	}
 
+	stop_managing_memchunk(texture_handles);
 	free(texture_handles);
 //printf("Deleting texture cache\n");
+
+	stop_managing_cache(texture_cache);
 	cache_delete(texture_cache);
 }
 

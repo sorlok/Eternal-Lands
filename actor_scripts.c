@@ -3306,7 +3306,7 @@ int parse_actor_weapon(actor_types *act, const xmlNode *cfg, const xmlNode *defa
 	if (act->weapon == NULL) {
 		int i, j;
 		act->weapon = (weapon_part*)calloc(actor_part_sizes[ACTOR_WEAPON_SIZE], sizeof(weapon_part));
-		begin_managing_weapon_part(act->weapon);
+		begin_managing_memchunk(act->weapon);
 
 		for (i = actor_part_sizes[ACTOR_WEAPON_SIZE]; i--;) {
 			act->weapon[i].mesh_index = -1;
@@ -4495,7 +4495,7 @@ int parse_actor_script(const xmlNode *cfg)
 			act->shirt[0].mesh_index= cal_load_mesh(act, act->file_name, NULL); //save the single meshindex as torso
 
 			//Manage this shirt.
-			begin_managing_shirt_part(act->shirt);
+			begin_managing_memchunk(act->shirt);
 		}
 		if (use_animation_program)
 		{
