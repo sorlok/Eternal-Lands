@@ -33,7 +33,8 @@ static Uint32 cache_system_compact();
 static Uint32 cache_clean(cache_struct *cache);
 static Uint32 cache_compact(cache_struct *cache);
 static cache_item_struct *cache_find_ptr(cache_struct *cache, const void *item);
-static void cache_remove(cache_struct *cache, cache_item_struct *item);
+static cache_item_struct *cache_find_ptr_i(cache_struct *cache, const void *item, int force_full_search);
+static void cache_remove(cache_struct *cache, cache_item_struct *item, int also_delete);
 static void cache_remove_all(cache_struct *cache);
 
 #ifdef FASTER_MAP_LOAD
@@ -221,8 +222,10 @@ void cache_delete(cache_struct *cache)
 	}
 	if (cache_system && cache != cache_system && !cache_delete_loop_block)
 	{
+		//BUGFIX: If "also_delete" is set to "true" here, the system will enter an infinite loop (and segfault eventually)
+		//BUGFIX: For some reason, cache_find_ptr fails when using the "latest" value  --just disabling it for this one search.
 		cache_delete_loop_block++;
-		cache_remove(cache_system, cache_find_ptr(cache_system, cache));
+		cache_remove(cache_system, cache_find_ptr_i(cache_system, cache, 1), 0);
 		cache_delete_loop_block--;
 	}
 	else
@@ -274,7 +277,7 @@ static Uint32 cache_clean(cache_struct *cache)
 			if (item->access_count == 0
 				&& item->access_time + cache->time_limit < cur_time)
 			{
-				cache_remove(cache, item);
+				cache_remove(cache, item, 1);
 				mem_freed += item->size;
 			}
 			//item->access_count=0;
@@ -386,7 +389,7 @@ cache_item_struct *cache_find(cache_struct *cache, const char *name)
 #endif
 }
 
-static cache_item_struct *cache_find_ptr(cache_struct *cache, const void *item)
+static cache_item_struct *cache_find_ptr_i(cache_struct *cache, const void *item, int force_full_search)
 {
 	cache_item_struct *citem;
 	Sint32 i;
@@ -395,11 +398,13 @@ static cache_item_struct *cache_find_ptr(cache_struct *cache, const void *item)
 		return NULL;
 
 	// quick check for the most recent item
-	if (cache->recent_item && cache->recent_item->name
-		&& cache->recent_item->cache_item == item)
-	{
-		cache_use(cache->recent_item);
-		return cache->recent_item;
+	if (!force_full_search) {
+		if (cache->recent_item && cache->recent_item->name
+			&& cache->recent_item->cache_item == item)
+		{
+			cache_use(cache->recent_item);
+			return cache->recent_item;
+		}
 	}
 
 	// TODO: how about a sorted list or a hash system?
@@ -420,6 +425,13 @@ static cache_item_struct *cache_find_ptr(cache_struct *cache, const void *item)
 
 	return NULL;
 }
+
+static cache_item_struct *cache_find_ptr(cache_struct *cache, const void *item)
+{
+	//Default: don't force a full search
+	return cache_find_ptr_i(cache, item, 0);
+}
+
 
 void *cache_find_item(cache_struct *cache, const char *name)
 {
@@ -546,16 +558,32 @@ void cache_adj_size(cache_struct *cache, Uint32 size, void *item)
 	}
 }
 
-static void cache_remove(cache_struct *cache, cache_item_struct *item)
+///If you are removing yourself from the system cache, don't set "also_delete"
+static void cache_remove(cache_struct *cache, cache_item_struct *item, int also_delete)
 {
+	static cache_item_struct* last_deleted_cache_item = NULL;
+	void* saved_item;
+
 	if (!item || !cache->cached_items)
 		return;		//nothing to do
+
+	//Call this item's delete method. 
+	saved_item = item->cache_item;
 	if (cache != cache_system)
 		cache_adj_size(cache_system, -item->size, cache);
-	if (item->cache_item && cache->free_item)
+	if (item->cache_item && cache->free_item && also_delete)
 		(*cache->free_item)(item->cache_item);
+
+	//cache_remove can be called in a re-entrant fashion when dealing with nested caches
+	// (a.k.a., the cache_system). So check if a cache freed its own cache item here and return.
+	if (last_deleted_cache_item == item) {
+		//In this particular case, we can also reclaim the item, which would otherwise leak.
+		free(saved_item);
+		return;
+	}
+
 	cache->total_size -= item->size;
-	cache->num_items--;
+	//cache->num_items--; //Don't do this here, or you'll never find the cache item!
 	cache->recent_item = NULL;	//forget where we are just incase
 
 	item->cache_item = NULL;	//failsafe
@@ -567,6 +595,7 @@ static void cache_remove(cache_struct *cache, cache_item_struct *item)
 		cache_item_struct **ci = cache->cached_items + cache->num_items - 1;
 		if (*ci == item)
 		{
+			last_deleted_cache_item = *ci;
 			free(*ci);
 		}
 		else
@@ -575,6 +604,7 @@ static void cache_remove(cache_struct *cache, cache_item_struct *item)
 			{
 				if (*ci == item)
 				{
+					last_deleted_cache_item = *ci;
 					free(*ci);
 					memmove(ci, ci+1,
 						(cache->num_items-(ci-cache->cached_items))*sizeof(cache_item_struct*));
@@ -622,6 +652,9 @@ static void cache_remove(cache_struct *cache, cache_item_struct *item)
 				}
 		}
 #endif // FASTER_MAP_LOAD
+
+	//Now decremnt num_items.
+	cache->num_items--;
 }
 
 static void cache_remove_all(cache_struct *cache)
@@ -639,7 +672,7 @@ static void cache_remove_all(cache_struct *cache)
 	{
 		if(cache->cached_items[i])
 		{
-			cache_remove(cache, cache->cached_items[i]);
+			cache_remove(cache, cache->cached_items[i], 1);
 			cache->cached_items[i]=NULL;
 		}
 	}
@@ -651,6 +684,7 @@ static void cache_remove_all(cache_struct *cache)
 #endif
 	cache->recent_item = NULL;	//forget where we are just incase
 }
+
 
 /* currently UNUSED
 void cache_remove_unused(cache_struct *cache)
@@ -667,7 +701,7 @@ void cache_remove_unused(cache_struct *cache)
 				}
 		}
 	cache->recent_item = NULL;	//forget where we are just incase
-}
+}*/
 
 void cache_system_shutdown()
 {
@@ -675,7 +709,7 @@ void cache_system_shutdown()
 	cache_system=NULL;
 }
 
-void cache_clear_counter(cache_struct *cache)
+/*void cache_clear_counter(cache_struct *cache)
 {
 	Sint32	i;
 
