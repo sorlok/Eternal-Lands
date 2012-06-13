@@ -2879,6 +2879,8 @@ int parse_actor_shirt(actor_types *act, const xmlNode *cfg, const xmlNode *defau
 	if (act->shirt == NULL) {
 		int i;
 		act->shirt = (shirt_part*)calloc(actor_part_sizes[ACTOR_SHIRT_SIZE], sizeof(shirt_part));
+		begin_managing_memchunk(act->shirt);
+
 		for (i = actor_part_sizes[ACTOR_SHIRT_SIZE]; i--;) act->shirt[i].mesh_index= -1;
 	}
 
@@ -2950,6 +2952,8 @@ int parse_actor_skin (actor_types *act, const xmlNode *cfg, const xmlNode *defau
 	if (act->skin == NULL) {
 		int i;
 		act->skin = (skin_part*)calloc(actor_part_sizes[ACTOR_SKIN_SIZE], sizeof(skin_part));
+		begin_managing_memchunk(act->skin);
+
 		for (i = actor_part_sizes[ACTOR_SKIN_SIZE]; i--;) act->skin[i].mesh_index= -1;
 	}
 
@@ -3017,6 +3021,8 @@ int parse_actor_legs (actor_types *act, const xmlNode *cfg, const xmlNode *defau
 	if (act->legs == NULL) {
 		int i;
 		act->legs = (legs_part*)calloc(actor_part_sizes[ACTOR_LEGS_SIZE], sizeof(legs_part));
+		begin_managing_memchunk(act->legs);
+
 		for (i = actor_part_sizes[ACTOR_LEGS_SIZE]; i--;) act->legs[i].mesh_index= -1;
 	}
 
@@ -3432,6 +3438,8 @@ int parse_actor_helmet (actor_types *act, const xmlNode *cfg, const xmlNode *def
 	if (act->helmet == NULL) {
 		int i;
 		act->helmet = (body_part*)calloc(actor_part_sizes[ACTOR_HELMET_SIZE], sizeof(body_part));
+		begin_managing_memchunk(act->helmet);
+
 		for (i = actor_part_sizes[ACTOR_HELMET_SIZE]; i--;) act->helmet[i].mesh_index= -1;
 	}
 
@@ -3459,6 +3467,8 @@ int parse_actor_neck (actor_types *act, const xmlNode *cfg, const xmlNode *defau
 	if (act->neck == NULL) {
 		int i;
 		act->neck = (body_part*)calloc(actor_part_sizes[ACTOR_NECK_SIZE], sizeof(body_part));
+		begin_managing_memchunk(act->neck);
+
 		for (i = actor_part_sizes[ACTOR_NECK_SIZE]; i--;) act->neck[i].mesh_index= -1;
 	}
 
@@ -3554,6 +3564,8 @@ int parse_actor_cape (actor_types *act, const xmlNode *cfg, const xmlNode *defau
 	if (act->cape == NULL) {
 		int i;
 		act->cape = (body_part*)calloc(actor_part_sizes[ACTOR_CAPE_SIZE], sizeof(body_part));
+		begin_managing_memchunk(act->cape);
+
 		for (i = actor_part_sizes[ACTOR_CAPE_SIZE]; i--;) act->cape[i].mesh_index= -1;
 	}
 
@@ -3584,6 +3596,8 @@ int parse_actor_head (actor_types *act, const xmlNode *cfg, const xmlNode *defau
 	if (act->head == NULL) {
 		int i;
 		act->head = (body_part*)calloc(actor_part_sizes[ACTOR_HEAD_SIZE], sizeof(body_part));
+		begin_managing_memchunk(act->head);
+
 		for (i = actor_part_sizes[ACTOR_HEAD_SIZE]; i--;) act->head[i].mesh_index= -1;
 	}
 
@@ -3660,6 +3674,8 @@ int parse_actor_shield (actor_types *act, const xmlNode *cfg, const xmlNode *def
 	if (act->shield == NULL) {
 		int i;
 		act->shield = (shield_part*)calloc(actor_part_sizes[ACTOR_SHIELD_SIZE], sizeof(shield_part));
+		begin_managing_memchunk(act->shield);
+
 		for (i = actor_part_sizes[ACTOR_SHIELD_SIZE]; i--;) {
 			act->shield[i].mesh_index = -1;
 			act->shield[i].missile_type = -1;
@@ -3693,6 +3709,8 @@ int parse_actor_hair (actor_types *act, const xmlNode *cfg, const xmlNode *defau
 	if (act->hair == NULL) {
 		int i;
 		act->hair = (hair_part*)calloc(actor_part_sizes[ACTOR_HAIR_SIZE], sizeof(hair_part));
+		begin_managing_memchunk(act->hair);
+
 		for (i = actor_part_sizes[ACTOR_HAIR_SIZE]; i--;) act->hair[i].mesh_index= -1;
 	}
 
@@ -4116,6 +4134,8 @@ int parse_actor_boots (actor_types *act, const xmlNode *cfg, const xmlNode *defa
 	if (act->boots == NULL) {
 		int i;
 		act->boots = (boots_part*)calloc(actor_part_sizes[ACTOR_BOOTS_SIZE], sizeof(boots_part));
+		begin_managing_memchunk(act->boots);
+
 		for (i = actor_part_sizes[ACTOR_BOOTS_SIZE]; i--;) act->boots[i].mesh_index= -1;
 	}
 
