@@ -27,8 +27,8 @@ MiscManager manager;
 
 
 //Helper script: begin managing<>
-template <typename Item>
-void begin_managing(std::set<Item*>& dest, Item* it, const char* const err_name)
+template <typename ItemType>
+void begin_managing(std::set<ItemType*>& dest, ItemType*& it, const char* const err_name)
 {
 	if (!MISC_MANAGER_ACTIVE) { return; }
 	if (!it) { return; }
@@ -40,8 +40,8 @@ void begin_managing(std::set<Item*>& dest, Item* it, const char* const err_name)
 }
 
 //Helper script: stop managing<>
-template <typename Item>
-void stop_managing(std::set<Item*>& dest, Item* it, const char* const err_name)
+template <typename ItemType>
+void stop_managing(std::set<ItemType*>& dest, ItemType*& it, const char* const err_name)
 {
 	if (!MISC_MANAGER_ACTIVE) { return; }
 	if (!it) { return; }
@@ -53,10 +53,10 @@ void stop_managing(std::set<Item*>& dest, Item* it, const char* const err_name)
 }
 
 //Helper script: free all elements<>
-template <typename Item>
-void free_all_elements(const std::set<Item*>& elems)
+template <typename ItemType>
+void free_all_elements(const std::set<ItemType*>& elems)
 {
-	for (typename std::set<Item*>::const_iterator it=elems.begin(); it!=elems.end(); it++) {
+	for (typename std::set<ItemType*>::const_iterator it=elems.begin(); it!=elems.end(); it++) {
 		if (*it) {
 			free(*it);
 		}

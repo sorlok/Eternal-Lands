@@ -20,6 +20,7 @@
 #include "trade.h"
 #include "widgets.h"
 #include "sound.h"
+#include "misc_managers.hpp"
 
 /* NOTE: This file contains implementations of the following, currently unused, and commented functions:
  *          Look at the end of the file.
@@ -673,6 +674,9 @@ int	create_window(const char *name, int pos_id, Uint32 pos_loc, int pos_x, int p
 		windows_list.window=(window_info *) calloc(ELW_WIN_MAX, sizeof(window_info));
 		//windows_list.window[0].window_id = -1;	// force a rebuild of this
 		//windows_list.num_windows = 1;
+
+		//Manage windows_list.window (it's not released in destroy_window)
+		//begin_managing_memchunk(windows_list.window);  //NOTE: This fails for some reason?
 	}
 
 	// find an empty slot

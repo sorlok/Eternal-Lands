@@ -21,6 +21,7 @@
 #include "notepad.h"
 #include "tabs.h"
 #endif // ENCYCL_NAVIGATION
+#include "misc_managers.hpp"
 
 int encyclopedia_win=-1;
 int encyclopedia_menu_x=100;
@@ -831,7 +832,11 @@ static void save_raw_page_link(const char *link, const char *title, size_t from_
 	if (num_raw_page_links >= max_raw_page_links)
 	{
 		max_raw_page_links += MAX_ENC_PAGES;
+
+		//Again, realloc() means we have to rea-assign this each time.
+		if (raw_page_links) { stop_managing_memchunk(raw_page_links); }
 		raw_page_links = (struct PAGE_LINK *)realloc(raw_page_links, sizeof(struct PAGE_LINK) * max_raw_page_links);
+		begin_managing_memchunk(raw_page_links);
 	}
 	raw_page_links[num_raw_page_links].link = link;
 	raw_page_links[num_raw_page_links].title = title;
@@ -1001,7 +1006,10 @@ static void process_encycl_links(void)
 	}
 
 	free(temp_links);
+
+	if (raw_page_links) { stop_managing_memchunk(raw_page_links); }
 	free(raw_page_links);
+
 	num_raw_page_links = max_raw_page_links = 0;
 }
 
