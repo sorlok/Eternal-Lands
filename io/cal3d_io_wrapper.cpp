@@ -121,6 +121,12 @@ class CalAnimationCache
 		CalAnimationCache()
 		{
 		}
+
+		~CalAnimationCache()
+		{
+			//Remove the Cal3D RefPtr and it will (eventually) delete the underlying Cal3D object
+			m_animations.clear();
+		}
 		
 		static CalAnimationCache & instance()
 		{
