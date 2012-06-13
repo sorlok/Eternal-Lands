@@ -8,16 +8,19 @@
 
 int queue_initialise (queue_t **queue)
 {
-	//(*queue) = malloc(sizeof(queue_t));
-	if (((*queue) = malloc(sizeof(queue_t))) == 0)
+	(*queue) = malloc(sizeof(queue_t));
+
+	if (((*queue) == 0)
 	{
 		LOG_ERROR("Failed to allocate memory for queue");
 
 		return 0;
 	}
 
+	(*queue)->front = malloc(sizeof(node_t));
+
 	/* Create a dummy node that's always at the front of our queue */
-	if (((*queue)->front = malloc(sizeof(node_t))) == 0)
+	if ((*queue)->front == 0)
 	{
 		//Note: We leak the original queue structure if we return here, but
 		//      if we're out of memory there are bigger problems to deal with.
@@ -52,7 +55,9 @@ int queue_push (queue_t *queue, void *item)
 		return 0;
 	}
 
-	if ((newnode = malloc(sizeof(node_t))) == 0)
+	newnode = malloc(sizeof(node_t));
+
+	if (newnode == 0)
 	{
 		LOG_ERROR("Failed to allocate memory for queue node");
 
@@ -76,16 +81,22 @@ void *queue_pop (queue_t *queue)
 	node_t *oldnode;
 	void *item;
 
-	if (queue == NULL || queue_isempty(queue)) {
+	if (queue == NULL || queue_isempty(queue))
+	{
 		return NULL;
-	} else {
+	}
+	else
+	{
 		CHECK_AND_LOCK_MUTEX(queue->mutex);
 		oldnode = queue->front->next;
 		item = oldnode->data;
 		/* Check if removing the last node from the queue */
-		if (queue->front->next->next == NULL) {
+		if (queue->front->next->next == NULL)
+		{
 			queue->rear = queue->front;
-		} else {
+		}
+		else
+		{
 			queue->front->next = queue->front->next->next;
 		}
 		free(oldnode);
@@ -97,9 +108,12 @@ void *queue_pop (queue_t *queue)
 
 void *queue_delete_node(queue_t *queue, node_t *node)
 {
-	if (queue == NULL || node == NULL || queue_isempty(queue)) {
+	if (queue == NULL || node == NULL || queue_isempty(queue))
+	{
 		return NULL;
-	} else {
+	}
+	else
+	{
 		void *data = NULL;
 		node_t *search_node;
 
@@ -107,16 +121,22 @@ void *queue_delete_node(queue_t *queue, node_t *node)
 		search_node = queue->front;
 		/* Find the node in the queue */
 		/* Check if it's the first node. */
-		if(node == queue->front) {
+		if (node == queue->front)
+		{
 			/* Shouldn't really happen */
 			return NULL;
-		} else {
-			while(search_node != NULL) {
+		}
+		else
+		{
+			while(search_node != NULL)
+			{
 				/* Check if the next node is what we're looking for */
-				if(search_node->next == node) {
+				if (search_node->next == node)
+				{
 					/* Point the  node before our node's  next pointer to the node after our node  */
 					search_node->next = node->next;
-					if(node == queue->rear) {
+					if (node == queue->rear)
+					{
 						queue->rear = search_node;
 					}
 					/* Make sure the data isn't lost when we free the node */
@@ -137,9 +157,12 @@ int queue_isempty(const queue_t *queue)
 {
 	int return_value;
 
-	if (queue == NULL) {
+	if (queue == NULL)
+	{
 		return_value = 1;
-	} else {
+	}
+	else
+	{
 		CHECK_AND_LOCK_MUTEX(queue->mutex);
 		return_value = (queue->front == queue->rear);
 		CHECK_AND_UNLOCK_MUTEX(queue->mutex);
@@ -149,9 +172,12 @@ int queue_isempty(const queue_t *queue)
 
 node_t *queue_front_node(const queue_t *queue)
 {
-	if(queue != NULL) {
+	if (queue != NULL)
+	{
 		return queue->front->next;
-	} else {
+	}
+	else
+	{
 		return NULL;
 	}
 }
@@ -170,15 +196,20 @@ void queue_destroy (queue_t *queue)
 {
 	void *tmp;
 
-	//Tell our queue manager that we're done.
-	stop_managing_queue(queue);
+	if (queue != NULL)
+	{
+		//Tell our queue manager that we're done.
+		stop_managing_queue(queue);
 
-	if(queue != NULL) {
 		CHECK_AND_LOCK_MUTEX(queue->mutex);
-		while (!queue_isempty (queue)) {
-			if ((tmp = queue_pop(queue)) == NULL) {
+		while (!queue_isempty (queue))
+		{
+			if ((tmp = queue_pop(queue)) == NULL)
+			{
 				break;
-			} else {
+			}
+			else
+			{
 				free(tmp);
 			}
 		}
