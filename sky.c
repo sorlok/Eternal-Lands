@@ -20,6 +20,7 @@
 #include "textures.h"
 #include "vmath.h"
 #include "weather.h"
+#include "misc_managers.hpp"
 
 float skybox_clouds[360][4];
 float skybox_clouds_detail[360][4];
@@ -75,6 +76,14 @@ double skybox_time_d = 0.0;
 double skybox_view[16];
 
 float skybox_z = 0.0;
+
+
+//Helper function
+void free_managed_memchunk(void* memchunk) {
+	stop_managing_memchunk(memchunk);
+	free(memchunk);
+}
+
 
 typedef struct
 {
@@ -329,20 +338,37 @@ sky_sphere create_sphere(int slices, int stacks)
 	return sphere;
 }
 
+
+void begin_managing_dome(sky_dome *dome) 
+{
+    begin_managing_memchunk(dome->vertices);
+    begin_managing_memchunk(dome->normals);
+    begin_managing_memchunk(dome->colors);
+    begin_managing_memchunk(dome->tex_coords);
+    begin_managing_memchunk(dome->faces);
+}
+
 void destroy_dome(sky_dome *dome)
 {
-    if (dome->vertices  ) { free(dome->vertices  ); dome->vertices   = NULL; }
-    if (dome->normals   ) { free(dome->normals   ); dome->normals    = NULL; }
-    if (dome->colors    ) { free(dome->colors    ); dome->colors     = NULL; }
-    if (dome->tex_coords) { free(dome->tex_coords); dome->tex_coords = NULL; }
-    if (dome->faces     ) { free(dome->faces     ); dome->faces      = NULL; }
+    if (dome->vertices  ) { free_managed_memchunk(dome->vertices  ); dome->vertices   = NULL; }
+    if (dome->normals   ) { free_managed_memchunk(dome->normals   ); dome->normals    = NULL; }
+    if (dome->colors    ) { free_managed_memchunk(dome->colors    ); dome->colors     = NULL; }
+    if (dome->tex_coords) { free_managed_memchunk(dome->tex_coords); dome->tex_coords = NULL; }
+    if (dome->faces     ) { free_managed_memchunk(dome->faces     ); dome->faces      = NULL; }
+}
+
+void begin_managing_sphere(sky_sphere *sphere) 
+{
+    begin_managing_memchunk(sphere->vertices);
+    begin_managing_memchunk(sphere->tex_coords);
+    begin_managing_memchunk(sphere->faces);
 }
 
 void destroy_sphere(sky_sphere *sphere)
 {
-    if (sphere->vertices  ) { free(sphere->vertices  ); sphere->vertices   = NULL; }
-    if (sphere->tex_coords) { free(sphere->tex_coords); sphere->tex_coords = NULL; }
-    if (sphere->faces     ) { free(sphere->faces     ); sphere->faces      = NULL; }
+    if (sphere->vertices  ) { free_managed_memchunk(sphere->vertices  ); sphere->vertices   = NULL; }
+    if (sphere->tex_coords) { free_managed_memchunk(sphere->tex_coords); sphere->tex_coords = NULL; }
+    if (sphere->faces     ) { free_managed_memchunk(sphere->faces     ); sphere->faces      = NULL; }
 }
 
 static __inline__ void draw_sphere(sky_sphere *sphere)
@@ -2628,11 +2654,11 @@ void skybox_init_gl()
 	destroy_dome(&dome_sky);
 	destroy_dome(&dome_clouds);
 	destroy_sphere(&moon_mesh);
-	if (dome_clouds_detail_colors) free(dome_clouds_detail_colors);
-	if (dome_clouds_colors_bis) free(dome_clouds_colors_bis);
-	if (dome_clouds_detail_colors_bis) free(dome_clouds_detail_colors_bis);
-	if (dome_clouds_tex_coords_bis) free(dome_clouds_tex_coords_bis);
-	if (fog_colors) free(fog_colors);
+	if (dome_clouds_detail_colors) free_managed_memchunk(dome_clouds_detail_colors);
+	if (dome_clouds_colors_bis) free_managed_memchunk(dome_clouds_colors_bis);
+	if (dome_clouds_detail_colors_bis) free_managed_memchunk(dome_clouds_detail_colors_bis);
+	if (dome_clouds_tex_coords_bis) free_managed_memchunk(dome_clouds_tex_coords_bis);
+	if (fog_colors) { free_managed_memchunk(fog_colors); }
 
 	dome_sky = create_dome(24, 12, 500.0, 80.0, 90.0, 3.5, 1.0);
 	dome_clouds = create_dome(24, 12, 500.0, 80.0, 90.0, 2.0, 1.0);
@@ -2642,6 +2668,16 @@ void skybox_init_gl()
 	dome_clouds_detail_colors_bis = (GLfloat*)malloc(4*dome_clouds.vertices_count*sizeof(GLfloat));
 	dome_clouds_tex_coords_bis = (GLfloat*)malloc(2*dome_clouds.vertices_count*sizeof(GLfloat));
 	fog_colors = (GLfloat*)malloc(3*dome_sky.slices_count*sizeof(GLfloat));
+
+	//Manage these too
+	begin_managing_dome(&dome_sky);
+	begin_managing_dome(&dome_clouds);
+	begin_managing_sphere(&moon_mesh);
+	begin_managing_memchunk(dome_clouds_detail_colors);
+	begin_managing_memchunk(dome_clouds_colors_bis);
+	begin_managing_memchunk(dome_clouds_detail_colors_bis);
+	begin_managing_memchunk(dome_clouds_tex_coords_bis);
+	begin_managing_memchunk(fog_colors);
 
 	for (i = dome_clouds.vertices_count; i--; )
 	{
