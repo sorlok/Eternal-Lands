@@ -751,7 +751,7 @@ static el_file_ptr zip_file_open(unzFile file)
 
 static el_file_ptr file_open(const char* file_name, const char* extra_path)
 {
-	char str[1024];
+	char str[1024] = {0};
 	el_zip_file_entry_t key;
 	el_file_ptr result;
 	Sint32 i, count;

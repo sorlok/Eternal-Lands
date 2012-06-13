@@ -47,7 +47,7 @@ static Uint32 download_file(const char* file_name, FILE* file,
 	const Uint32 size, char* buffer, const Uint32 etag_size,
 	char* etag)
 {
-	char str[64];
+	char str[64] = {0};
 	char* pos;
 	IPaddress http_ip;
 	TCPsocket http_sock;
@@ -656,7 +656,7 @@ static Uint32 check_server_digest_files(const char* file, FILE* tmp_file,
 	const char* server, const char* path, const Uint32 size, char* buffer,
 	char md5[32])
 {
-	char file_name[1024];
+	char file_name[1024] = {0};
 	Uint32 i, result;
 
 	for (i = 0; i < 2; i++)
@@ -682,9 +682,9 @@ static Uint32 build_update_list(const char* server, const char* file,
 	const Uint32 etag_size, char* etag,
 	progress_fnc update_progress_function, void* user_data)
 {
-	char error_str[4096];
-	char file_name[1024];
-	char buffer[1024];
+	char error_str[4096] = {0};
+	char file_name[1024] = {0};
+	char buffer[1024] = {0};
 	Uint64 file_size;
 	FILE* tmp_file;
 	void* file_buffer;

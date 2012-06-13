@@ -75,8 +75,8 @@ static Uint32 progress_function(const char* str, const Uint32 max,
 static Uint32 custom_update_threaded(const char* dir, const char* zip_file,
 	void* data)
 {
-	char buffer[1024];
-	char str[256];
+	char buffer[1024] = {0};
+	char str[256] = {0};
 	char* server;
 	FILE* file;
 	Uint32 count, index, idx, len, result;
