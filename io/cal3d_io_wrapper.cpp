@@ -4,6 +4,7 @@
 #include "../errors.h"
 #include <cal3d/global.h>
 #include <cal3d/cal3d.h>
+#include "cal3d/coretrack.h"
 #include <iostream>
 #include "elfilewrapper.h"
 #include "../misc_managers.hpp"
@@ -125,7 +126,18 @@ class CalAnimationCache
 
 		~CalAnimationCache()
 		{
+			for (AnimationsMap::iterator it=m_animations.begin(); it!=m_animations.end(); it++) {
+				//Remove tracks
+				std::list<CalCoreTrack*>& trackList = it->second->getListCoreTrack();
+				for (std::list<CalCoreTrack*>::iterator trIt=trackList.begin(); trIt!=trackList.end(); trIt++) {
+					(*trIt)->destroy();
+					delete *trIt;
+				}
+				trackList.clear();
+			}
+
 			//Remove the Cal3D RefPtr and it will (eventually) delete the underlying Cal3D object
+			//(The hash will actually clear itself; delete this line later once we've isolated all leaks...)
 			m_animations.clear();
 		}
 		
