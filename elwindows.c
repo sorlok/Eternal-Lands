@@ -29,9 +29,8 @@
  * void* get_window_handler(int, int);
  */
 
-#define ELW_WIN_MAX 128
-
 windows_info	windows_list;	// the master list of windows
+int windows_list_init = 0;
 
 static window_info *cur_drag_window = NULL;
 static widget_list *cur_drag_widget = NULL;
@@ -666,12 +665,13 @@ int	create_window(const char *name, int pos_id, Uint32 pos_loc, int pos_x, int p
 	int isold = 1;
 	
 	// verify that we are setup and space allocated
-	if (windows_list.window == NULL)
+	if (!windows_list_init)
 	{
+		windows_list_init = 1;
 		// allocate the space
 		windows_list.num_windows = 0;
 		windows_list.max_windows = ELW_WIN_MAX;
-		windows_list.window=(window_info *) calloc(ELW_WIN_MAX, sizeof(window_info));
+		//windows_list.window=(window_info *) calloc(ELW_WIN_MAX, sizeof(window_info));
 		//windows_list.window[0].window_id = -1;	// force a rebuild of this
 		//windows_list.num_windows = 1;
 
@@ -804,6 +804,7 @@ void	destroy_window(int win_id)
 {
 	window_info *win;
 
+	if (!windows_list.window) { return; } //We free this now, so double-check.
 	if(win_id < 0 || win_id >= windows_list.num_windows)	return;
 	if(windows_list.window[win_id].window_id != win_id)	return;
 	// mark the window as unused
@@ -891,6 +892,26 @@ int	init_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y, in
 	}
 
 	return 1;
+}
+
+void	free_all_windows()
+{
+	int i;
+	for (i=0; i < windows_list.num_windows; i++)
+	{
+		if (windows_list.window[i].window_id >= 0)
+		{
+			destroy_window(i);
+		}
+	}
+
+	//Free the window list too.
+	if (windows_list.window) {
+		//Note: This can be done, but it tends to cause problems with other 
+		//      destroy-on-delete types. I might just move windows_list.window to static memory...
+		//free(windows_list.window);
+		//windows_list.window = NULL;
+	}
 }
 
 int	move_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y)

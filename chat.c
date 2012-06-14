@@ -1110,7 +1110,7 @@ void generic_chans(void)
 
 void init_channel_names(void)
 {
-	char file[256];
+	char file[256] = {0};
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 
@@ -1278,6 +1278,9 @@ void init_channel_names(void)
 		LOG_ERROR(using_builtin_chanlist);
 		generic_chans();
 	}
+
+	//Reclaim memory
+	xmlFreeDoc(doc);
 }
 
 void cleanup_chan_names(void)

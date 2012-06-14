@@ -710,9 +710,9 @@ void init_2d_obj_cache()
 void init_stuff()
 {
 	int seed;
-	char file_name[250];
+	char file_name[250]={0};
 	int i;
-	char config_location[300];
+	char config_location[300]={0};
 	const char * cfgdir;
 
 	if (chdir(datadir) != 0)

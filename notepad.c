@@ -482,6 +482,7 @@ static int notepad_load_file()
 		}
 		cur = cur->next;         // Advance to the next node.
 	}
+	xmlFreeDoc(doc);
 	return 1;
 }
 
@@ -546,6 +547,7 @@ int notepad_save_file()
 	}
 
 	// Success!
+	xmlFreeDoc(doc);
 	return 1;
 }
 

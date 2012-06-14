@@ -250,6 +250,8 @@ void fd_free() {
 		st_destroy(bp_fonts);
 		bp_fonts = NULL;
 	}
+
+	xmlFreeDoc(doc);
 }
 
 fd_Font * fd_getFont(int id) {

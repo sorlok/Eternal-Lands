@@ -455,6 +455,9 @@ int main(int argc, char **argv)
 	olc_shutdown();
 #endif	//OLC
 
+	//Close all windows
+	free_all_windows();
+
 	//Clean up open filehandles/sockets
 	release_sdlsocket_items();
 	close_text_log_files();

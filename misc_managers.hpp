@@ -15,6 +15,8 @@
 #ifndef UUID_e0e606f9_66e1_4931_a887_ee6fe85e21de
 #define UUID_e0e606f9_66e1_4931_a887_ee6fe85e21de
 
+#include "cal3d_wrapper.h"
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -23,7 +25,7 @@ extern "C"
 #include "cache.h"
 
 //The easy way
-struct CalCoreModel;
+//struct CalCoreModel;
 
 void begin_managing_memchunk(void* vp);
 void stop_managing_memchunk(void* vp);

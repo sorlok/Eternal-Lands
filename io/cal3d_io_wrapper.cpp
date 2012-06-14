@@ -125,7 +125,10 @@ class CalAnimationCache
 		~CalAnimationCache()
 		{
 			//Remove the Cal3D RefPtr and it will (eventually) delete the underlying Cal3D object
+CalCoreAnimationPtr ptr = m_animations.begin()->second;
+printf("Test count before: %d\n", ptr.get()->getRefCount());
 			m_animations.clear();
+printf("Test count after: %d\n", ptr.get()->getRefCount());
 		}
 		
 		static CalAnimationCache & instance()

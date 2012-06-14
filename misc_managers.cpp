@@ -4,6 +4,7 @@
 
 #include "cal3d_wrapper.h"
 #include "elloggingwrapper.h"
+#include "cal3d/cal3d.h"
 
 namespace  {
 
@@ -67,7 +68,11 @@ void free_all_elements(const std::set<ItemType*>& elems)
 //CalCoreModels are special
 void delete_cal_core_model(CalCoreModel* model)
 {
-	//TODO: Check if ~CalCoreModel() removes its animation Refs.
+	//TODO: Check that this works properly.
+	int size = CalCoreModel_GetCoreAnimationCount(model);
+	for (int i=0; i<size; i++) {
+		model->unloadCoreAnimation(i);
+	}
 
 	//Finally
 	CalCoreModel_Delete(model);
@@ -88,12 +93,12 @@ extern "C" void stop_managing_memchunk(void* vp)
 	stop_managing(manager.all_voidps, vp, "void*");
 }
 
-extern "C" void begin_managing_cal_core_model(CalCoreModel* cm)
+extern "C" void begin_managing_cal_core_model(struct CalCoreModel* cm)
 {
 	begin_managing(manager.all_cal_core_models, cm, "Cal Core Model");
 }
 
-extern "C" void stop_managing_cal_core_model(CalCoreModel* cm)
+extern "C" void stop_managing_cal_core_model(struct CalCoreModel* cm)
 {
 	stop_managing(manager.all_cal_core_models, cm, "Cal Core Model");
 }

@@ -220,15 +220,18 @@ typedef	struct	{
 #define ELW_MOUSE_BUTTON_WHEEL  (ELW_MOUSE_BUTTON|ELW_WHEEL)
 /*! @} */
 
+#define ELW_WIN_MAX 128
+
 /*!
  * structure containing data for all windows used.
  */
 typedef	struct	{
-	window_info	*window; /*!< an array of \ref window_info windows */
+	window_info	window[ELW_WIN_MAX]; /*!< an array of \ref window_info windows */
 	int	num_windows;	/*!< highest item used */
 	int max_windows;	/*!< number of windows allocated */
 	int	display_level;
 } windows_info;
+
 
 extern	windows_info	windows_list; /*!< global variable defining the list of windows */
 extern int windows_on_top; /*!< global variable for whether windows appear on top of the console */
@@ -387,6 +390,13 @@ void	destroy_window(int win_id);
  * \sa move_window
  */
 int		init_window(int win_id, int pos_id, Uint32 pos_loc, int pos_x, int pos_y, int size_x, int size_y);
+
+
+
+//Call delete on all windows
+void		free_all_windows();
+
+
 
 /*!
  * \ingroup elwindows
