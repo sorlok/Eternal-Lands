@@ -31,6 +31,7 @@ void begin_managing_memchunk(void* vp);
 void stop_managing_memchunk(void* vp);
 
 void begin_managing_cal_core_model(struct CalCoreModel* cm);
+int is_managing_cal_core_model(struct CalCoreModel* cm);
 void stop_managing_cal_core_model(struct CalCoreModel* cm);
 
 void begin_managing_cache(cache_struct* cm);

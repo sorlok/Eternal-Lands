@@ -6,6 +6,7 @@
 #include <cal3d/cal3d.h>
 #include <iostream>
 #include "elfilewrapper.h"
+#include "../misc_managers.hpp"
 
 //****************************************************************************//
 // CalLoader wrapper functions definition                                     //
@@ -125,10 +126,7 @@ class CalAnimationCache
 		~CalAnimationCache()
 		{
 			//Remove the Cal3D RefPtr and it will (eventually) delete the underlying Cal3D object
-CalCoreAnimationPtr ptr = m_animations.begin()->second;
-printf("Test count before: %d\n", ptr.get()->getRefCount());
 			m_animations.clear();
-printf("Test count after: %d\n", ptr.get()->getRefCount());
 		}
 		
 		static CalAnimationCache & instance()
@@ -163,7 +161,6 @@ printf("Test count after: %d\n", ptr.get()->getRefCount());
 				}
 				
 				anims[key] = anim_ptr;
-
 				return anim_ptr;
 			}
 		}
@@ -176,7 +173,6 @@ extern "C" CalCoreAnimation *CalLoader_ELLoadCoreAnimation(CalLoader *self,
 	assert(self);
 
 	ElDataSource file(strFilename);
-
 	CalCoreAnimation *core_animation = explicitIncRef(self->loadCoreAnimation(file).get());
 
 	if (core_animation)
@@ -231,6 +227,9 @@ extern "C" CalCoreSkeleton *CalLoader_ELLoadCoreSkeleton(CalLoader *self, const 
 extern "C" int CalCoreModel_ELLoadCoreAnimation(CalCoreModel *self, const char *strFilename, float scale)
 {
 	assert(self);
+	if (!is_managing_cal_core_model(self)) {
+		printf("ERROR! Not managing calmodel: %x\n", self);
+	}
 
 	CalCoreAnimationPtr core_animation = CalAnimationCache::loadAnimation(strFilename, scale);
 
@@ -239,7 +238,20 @@ extern "C" int CalCoreModel_ELLoadCoreAnimation(CalCoreModel *self, const char *
 		return -1;
 	}
 
-	return self->addCoreAnimation(core_animation.get());
+	//The CalCoreModel may already contain this animation, so check that before adding it.
+	int coreAnimID = -1; 
+	for (int res=0; res<self->getCoreAnimationCount(); res++) {
+		if (self->getCoreAnimation(res) == core_animation.get()) {
+			coreAnimID = res;
+			break;
+		}
+	}
+
+	//If not, we have to add it.
+	if (coreAnimID==-1) {
+		coreAnimID = self->addCoreAnimation(core_animation.get());
+	}
+	return coreAnimID;
 }
 
 extern "C" int CalCoreModel_ELLoadCoreMaterial(CalCoreModel *self, const char *strFilename)

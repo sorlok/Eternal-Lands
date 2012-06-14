@@ -68,7 +68,7 @@ void free_all_elements(const std::set<ItemType*>& elems)
 //CalCoreModels are special
 void delete_cal_core_model(CalCoreModel* model)
 {
-	//TODO: Check that this works properly.
+	//Note: It appears that CalCoreModels delete their animations properly... so where else are we storing them?
 	int size = CalCoreModel_GetCoreAnimationCount(model);
 	for (int i=0; i<size; i++) {
 		model->unloadCoreAnimation(i);
@@ -101,6 +101,11 @@ extern "C" void begin_managing_cal_core_model(struct CalCoreModel* cm)
 extern "C" void stop_managing_cal_core_model(struct CalCoreModel* cm)
 {
 	stop_managing(manager.all_cal_core_models, cm, "Cal Core Model");
+}
+
+extern "C" int is_managing_cal_core_model(struct CalCoreModel* cm)
+{
+	return manager.all_cal_core_models.count(cm);
 }
 
 extern "C" void begin_managing_cache(cache_struct* cache)
