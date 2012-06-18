@@ -28,6 +28,7 @@
 #ifdef FSAA
 #include "fsaa/fsaa.h"
 #endif /* FSAA */
+#include "misc_managers.hpp"
 
 typedef struct
 {
@@ -131,7 +132,9 @@ int get_max_supported_water_shader_quality()
 
 void init_water_buffers(int water_buffer_size)
 {
+	if (water_tile_buffer) { stop_managing_memchunk(water_tile_buffer); }
 	water_tile_buffer = realloc(water_tile_buffer, water_buffer_size * 4 * 2 * sizeof(GLfloat));
+	begin_managing_memchunk(water_tile_buffer);
 
 	if (have_extension(arb_vertex_buffer_object))
 	{

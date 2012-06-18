@@ -19,6 +19,7 @@
 #include "elconfig.h"
 #include "gl_init.h"
 #include "tiles.h"
+#include "misc_managers.hpp"
 
 // We create an enum of the sides so we don't have to call each side 0 or 1.
 // This way it makes it more understandable and readable when dealing with frustum sides.
@@ -39,7 +40,7 @@ FRUSTUM shadow_frustum;
 FRUSTUM* current_frustum;
 unsigned int current_frustum_size;
 double reflection_clip_planes[5][4];
-PLANE* reflection_portals;
+PLANE* reflection_portals = NULL;
 
 ///////////////////////////////// NORMALIZE PLANE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 /////
@@ -402,7 +403,9 @@ int aabb_in_frustum(const AABBOX bbox)
 
 void init_reflection_portals(int size)
 {
+	if (reflection_portals) { stop_managing_memchunk(reflection_portals); }
 	reflection_portals = realloc(reflection_portals, size * 4 * sizeof(PLANE));
+	begin_managing_memchunk(reflection_portals);
 }
 
 void calculate_reflection_frustum(float water_height)
