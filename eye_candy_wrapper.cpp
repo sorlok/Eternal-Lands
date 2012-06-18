@@ -16,6 +16,7 @@
 #include "skeletons.h"
 #include "tiles.h"
 #include "weather.h"
+#include "misc_managers.hpp"
 // G L O B A L S //////////////////////////////////////////////////////////////
 
 #ifdef MAP_EDITOR
@@ -881,12 +882,19 @@ extern "C" void ec_remove_obstruction_by_e3d_object(e3d_object* e3dobj)
 
 extern "C" ec_bounds ec_create_bounds_list()
 {
-	return (ec_bounds)(new ec::SmoothPolygonBoundingRange());
+	//NOTE: This is *not* the right way to manage memory for Bounds lists. 
+	//      In fact, the bounds class is very small, so returning-by-value would
+	//      probably be the best option ---except we're still dealing with lots of
+	//      C wrappers. So this is how it must be done for now.
+	ec::SmoothPolygonBoundingRange* res = new ec::SmoothPolygonBoundingRange();
+	begin_managing_bounds(res);
+	return (ec_bounds)(res);
 }
 
 extern "C" void ec_free_bounds_list(ec_bounds bounds)
 {
 	ec::SmoothPolygonBoundingRange* cast_bounds = (ec::SmoothPolygonBoundingRange*)bounds;
+	stop_managing_bounds(cast_bounds);
 	delete cast_bounds;
 }
 

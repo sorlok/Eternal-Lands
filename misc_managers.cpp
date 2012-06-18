@@ -5,6 +5,7 @@
 #include "cal3d_wrapper.h"
 #include "elloggingwrapper.h"
 #include "cal3d/cal3d.h"
+#include "eye_candy/eye_candy.h"
 
 namespace  {
 
@@ -19,6 +20,7 @@ public:
 	std::set<void*> all_voidps;
 	std::set<CalCoreModel*> all_cal_core_models;
 	std::set<cache_struct*> all_caches;
+	std::set<ec::BoundingRange*> all_bounds;
 
 	~MiscManager();
 }; 
@@ -118,6 +120,16 @@ extern "C" void stop_managing_cache(cache_struct* cache)
 	stop_managing(manager.all_caches, cache, "Cache");
 }
 
+void begin_managing_bounds(ec::BoundingRange* bnd)
+{
+	begin_managing(manager.all_bounds, bnd, "BoundingRange");
+}
+
+void stop_managing_bounds(ec::BoundingRange* bnd)
+{
+	stop_managing(manager.all_bounds, bnd, "BoundingRange");
+}
+
 
 namespace {
 
@@ -144,6 +156,16 @@ MiscManager::~MiscManager() {
 	for (; it!=all_caches.end(); it++) {
 		if (*it) {
 			cache_delete(*it);
+		}
+	}
+	}
+
+	//Bounding ranges require a "delete"
+	{
+	std::set<ec::BoundingRange*>::const_iterator it=all_bounds.begin();
+	for (; it!=all_bounds.end(); it++) {
+		if (*it) {
+			delete *it;
 		}
 	}
 	}

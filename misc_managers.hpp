@@ -24,9 +24,6 @@ extern "C"
 
 #include "cache.h"
 
-//The easy way
-//struct CalCoreModel;
-
 void begin_managing_memchunk(void* vp);
 void stop_managing_memchunk(void* vp);
 
@@ -39,6 +36,14 @@ void stop_managing_cache(cache_struct* cm);
 
 #ifdef __cplusplus
 }
+#endif
+
+
+//Only c++ sees this method.
+#ifdef __cplusplus
+namespace ec { class BoundingRange; }
+void begin_managing_bounds(ec::BoundingRange* vp);
+void stop_managing_bounds(ec::BoundingRange* vp);
 #endif
 
 
